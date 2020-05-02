@@ -3,17 +3,15 @@ const createGame = () => {
     players: {},
     fruits: {},
     screen: {
-      width: 40,
-      height: 20
+      width: 60,
+      height: 30
     }
   };
 
   const observers = [];
 
   const start = () => {
-    const frequency = 2000;
-
-    setInterval(addFruit, frequency);
+    addFruit();
   };
 
   const subscribe = (observerFunction) => {
@@ -70,8 +68,6 @@ const createGame = () => {
       x: fruitX,
       y: fruitY
     };
-
-    console.log(state.fruits[fruitId]);
 
     notifyAll({
       type: 'add-fruit',
