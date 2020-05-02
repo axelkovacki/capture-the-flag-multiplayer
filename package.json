@@ -2,11 +2,11 @@
   "name": "multiplayer-game",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.mjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "production": "node --experimental-modules server.js"
+    "production": "node --experimental-modules server.mjs"
   },
   "author": "",
   "license": "ISC",
