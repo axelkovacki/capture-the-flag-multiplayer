@@ -233,49 +233,49 @@ const createGame = () => {
     const player = state.players[playerId];
 
     for (const playerIdInComing in state.players) {
-      if(playerId !== playerIdInComing) {
-        const playerInComing = state.players[playerIdInComing];
+      if(playerId === playerIdInComing) {
+        continue;
+      }
 
-        if (player.x > state.screen.width / 2) {
-          if (player.x === playerInComing.x && player.y === playerInComing.y) {
+      const playerInComing = state.players[playerIdInComing];
 
-            // Disblock moves of team zero enemy
-            if (player.team === playerInComing.team) {
-              updatePlayer({
-                playerId: playerIdInComing,
-                playerStopped: false
-              });
-            }
+      if (player.x !== playerInComing.x || player.y !== playerInComing.y) {
+        continue;
+      }
 
-            // Block moves of team zero enemy
-            if (player.team !== playerInComing.team) {
-              updatePlayer({
-                playerId: player.team === 0 ? playerId : playerIdInComing,
-                playerStopped: true
-              });
-            }
-          }
+      if (player.x > state.screen.width / 2) {
+        // Disblock moves of team zero enemy.
+        if (player.team === playerInComing.team) {
+          updatePlayer({
+            playerId: playerIdInComing,
+            playerStopped: false
+          });
         }
 
-        if (player.x < state.screen.width / 2) {
-          if (player.x === playerInComing.x && player.y === playerInComing.y) {
+        // Block moves of team zero enemy.
+        if (player.team !== playerInComing.team) {
+          updatePlayer({
+            playerId: player.team === 0 ? playerId : playerIdInComing,
+            playerStopped: true
+          });
+        }
+      }
 
-            // Disblock moves of team one enemy
-            if (player.team === playerInComing.team) {
-              updatePlayer({
-                playerId: playerIdInComing,
-                playerStopped: false
-              });
-            }
+      if (player.x < state.screen.width / 2) {
+        // Disblock moves of team one enemy.
+        if (player.team === playerInComing.team) {
+          updatePlayer({
+            playerId: playerIdInComing,
+            playerStopped: false
+          });
+        }
 
-            // Block moves of team one enemy
-            if (player.team !== playerInComing.team) {
-              updatePlayer({
-                playerId: player.team === 1 ? playerId : playerIdInComing,
-                playerStopped: true
-              });
-            }
-          }
+        // Block moves of team one enemy.
+        if (player.team !== playerInComing.team) {
+          updatePlayer({
+            playerId: player.team === 1 ? playerId : playerIdInComing,
+            playerStopped: true
+          });
         }
       }
     }
@@ -288,13 +288,15 @@ const createGame = () => {
         updatePlayer({ playerId, playerFlag: flagId });
       }
 
-      // Player move flag after move your self.
-      if (player.flag === flagId) {
-        moveFlag({ flagId, flagX: player.x, flagY: player.y });
+      if (player.flag !== flagId) {
+        continue;
       }
+      
+      // Player move flag after move your self.
+      moveFlag({ flagId, flagX: player.x, flagY: player.y });
 
       // Player comes to an end with enemy flag.
-      if (player.flag === flagId && player.x === state.screen.width / 2 && player.y < state.screen.height) {
+      if (player.x === state.screen.width / 2 && player.y < state.screen.height) {
         if (flag.team === 0) {
           updateScore({ teamId: 'teamOne', teamScore: state.scores['teamOne'] += 1 });
           updatePlayer({ playerId, playerFlag: null });

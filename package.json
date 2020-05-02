@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
     "production": "node server.js"
   },
   "license": "ISC",

@@ -22,7 +22,7 @@ const createKeyboardListener = (document) => {
     if (event.repeat) {
       return false;
     }
-    
+
     const keyPressed = event.key; 
 
     const command = {
