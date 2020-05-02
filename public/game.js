@@ -1,7 +1,7 @@
 const createGame = () => {
   const state = {
     players: {},
-    fruits: {},
+    flags: {},
     screen: {
       width: 60,
       height: 30
@@ -11,8 +11,8 @@ const createGame = () => {
   const observers = [];
 
   const start = () => {
-    addFruit({ fruitId: 'flag1', fruitX: 5, fruitY: state.screen.height/2 });
-    addFruit({ fruitId: 'flag2', fruitX: state.screen.width - 6, fruitY: state.screen.height/2 });
+    addFlag({ flagId: 'flag1', flagX: 5, flagY: state.screen.height/2, flagTeam: 0 });
+    addFlag({ flagId: 'flag2', flagX: state.screen.width - 6, flagY: state.screen.height/2, flagTeam: 1 });
   };
 
   const subscribe = (observerFunction) => {
@@ -29,7 +29,7 @@ const createGame = () => {
     Object.assign(state, newState);
   };
 
-  const addPlayer = ({ playerId, playerX, playerY, playerTeam }) => {
+  const addPlayer = ({ playerId, playerX, playerY, playerTeam, playerFlag }) => {
     if(!playerTeam) {
       let teamOne = 0;
       let teamTwo = 0;
@@ -50,9 +50,6 @@ const createGame = () => {
       }
     }
 
-    addFruit({ fruitId: 'flag1', fruitX: 5, fruitY: state.screen.height/2 });
-    addFruit({ fruitId: 'flag2', fruitX: state.screen.width - 6, fruitY: state.screen.height/2 });
-
     if(playerTeam === 0) {
       playerX = state.screen.width/2 - 6;
       playerY = state.screen.height/2;
@@ -66,7 +63,8 @@ const createGame = () => {
     state.players[playerId] = {
       x: playerX,
       y: playerY,
-      team: playerTeam
+      team: playerTeam,
+      flag: playerFlag
     };
 
     notifyAll({
@@ -74,9 +72,24 @@ const createGame = () => {
       playerId,
       playerX,
       playerY,
-      playerTeam
+      playerTeam,
+      playerFlag
     });
   };
+
+  const updatePlayer = ({ playerId, playerX, playerY, playerTeam, playerFlag }) => {
+    delete state.players[playerId];
+
+    notifyAll({
+      type: 'update-player',
+      playerId,
+      playerX,
+      playerY,
+      playerTeam,
+      playerFlag
+    });
+  };
+
 
   const removePlayer = ({ playerId }) => {
     delete state.players[playerId];
@@ -87,44 +100,64 @@ const createGame = () => {
     });
   };
 
-  const addFruit = (command) => {
-    const fruitId = command ? command.fruitId : Math.floor(Math.random() * 10000000);
-    const fruitX = command ? command.fruitX : Math.floor(Math.random() * state.screen.width);
-    const fruitY = command ? command.fruitY : Math.floor(Math.random() * state.screen.height);
+  const addFlag = (command) => {
+    const flagId = command ? command.flagId : Math.floor(Math.random() * 10000000);
+    const flagX = command ? command.flagX : Math.floor(Math.random() * state.screen.width);
+    const flagY = command ? command.flagY : Math.floor(Math.random() * state.screen.height);
+    const flagTeam = command ? command.flagTeam : 0;
 
-    state.fruits[fruitId] = {
-      x: fruitX,
-      y: fruitY
+    state.flags[flagId] = {
+      x: flagX,
+      y: flagY,
+      team: flagTeam
     };
 
     notifyAll({
-      type: 'add-fruit',
-      fruitId,
-      fruitX,
-      fruitY
+      type: 'add-flag',
+      flagId,
+      flagX,
+      flagY,
+      flagTeam
     });
   };
 
-  const removeFruit = ({ fruitId }) => {
-    delete state.fruits[fruitId];
+  const moveFlag = ({ flagId, flagX, flagY }) => {
+    state.flags[flagId] = {
+      x: flagX,
+      y: flagY
+    };
 
     notifyAll({
-      type: 'remove-fruit',
-      fruitId
+      type: 'move-flag',
+      flagId,
+      flagX,
+      flagY
     });
   };
 
-  const checkForFruitCollision = (playerId) => {
+  const removeFlag = ({ flagId }) => {
+    delete state.flags[flagId];
+
+    notifyAll({
+      type: 'remove-flag',
+      flagId
+    });
+  };
+
+  const checkForFlagCollision = (playerId) => {
     const player = state.players[playerId];
 
-    for (const fruitId in state.fruits) {
-      const fruit = state.fruits[fruitId];
-      console.log(`Checking ${playerId} and ${fruitId}.`);
+    for (const flagId in state.flags) {
+      const flag = state.flags[flagId];
+      console.log(`Checking ${playerId} and ${flagId}.`);
 
-      if (player.x === fruit.x && player.y === fruit.y) {
-        console.log(`Collision between ${playerId} and ${fruitId}.`);
-        // removeFruit({ fruitId });
+      if (player.x === flag.x && player.y === flag.y) {
+        // updatePlayer({ playerId, playerX: player.x, playerY: player.y, playerTeam: player.team, playerFlag: flagId });
       }
+
+      // if(player.flag == flag.id) {
+      //   moveFlag({ flagId, flagX: player.x, flagY: player.y });
+      // }
     }            
   };
 
@@ -159,16 +192,18 @@ const createGame = () => {
 
     if (player && moveFunction) {
       moveFunction(player);
-      checkForFruitCollision(command.playerId);
+      checkForFlagCollision(command.playerId);
     }
   };
 
   return {
     addPlayer,
+    updatePlayer,
     removePlayer,
     movePlayer,
-    addFruit,
-    removeFruit,
+    addFlag,
+    moveFlag,
+    removeFlag,
     state,
     setState,
     subscribe,

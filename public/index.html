@@ -67,6 +67,11 @@
         game.addPlayer(command);
       });
 
+      socket.on('update-player', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
+        game.addPlayer(command);
+      });
+
       socket.on('move-player', (command) => {
         // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
 
@@ -81,14 +86,19 @@
         game.removePlayer(command);
       });
 
-      socket.on('add-fruit', (command) => {
-        // console.log(`> Receiving ${command.type} -> ${command.fruitId}`);
-        game.addFruit(command);
+      socket.on('add-flag', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.flagId}`);
+        game.addFlag(command);
       });
 
-      socket.on('remove-fruit', (command) => {
-        // console.log(`> Receiving ${command.type} -> ${command.fruitId}`);
-        game.removeFruit(command);
+      socket.on('move-flag', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.flagId}`);
+        game.moveFlag(command);
+      });
+
+      socket.on('remove-flag', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.flagId}`);
+        game.removeFlag(command);
       });
     </script>
   </body>
