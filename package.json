@@ -1,14 +1,17 @@
 {
   "name": "multiplayer-game",
+  "author": "Áxel Kovacki",
   "version": "1.0.0",
+  "engines": {
+    "node": "14.x"
+  },
   "description": "",
-  "main": "server.mjs",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "production": "node --experimental-modules server.mjs"
+    "production": "node server.js"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
