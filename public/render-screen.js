@@ -31,8 +31,13 @@ const renderScreen = (screen, game, requestAnimationFrame, currentPlayerId) => {
 
   const currentPlayer = game.state.players[currentPlayerId];
 
-  if(currentPlayer) {
+  if (currentPlayer) {
     context.fillStyle = currentPlayer.team === 0 ? '#00FD61' : '#3B8EEA';
+
+    if (currentPlayer.flag != null) {
+      context.fillStyle = '#F0DB4F';
+    }
+
     context.globalAlpha = 1
     context.fillRect(currentPlayer.x, currentPlayer.y, 1, 1);
   }

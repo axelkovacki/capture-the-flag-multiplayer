@@ -13,7 +13,7 @@ const game = createGame();
 game.start();
 
 game.subscribe((command) => {
-  console.log(`> Emitting: ${command.type}`);
+  // console.log(`> Emitting: ${command.type}`);
   sockets.emit(command.type, command);
 });
 

@@ -29,42 +29,51 @@ const createGame = () => {
     Object.assign(state, newState);
   };
 
-  const addPlayer = ({ playerId, playerX, playerY, playerTeam, playerFlag }) => {
-    if(!playerTeam) {
+  const addPlayer = ({ playerId, playerX, playerY, playerTeam, playerFlag, playerStopped }) => {
+    if (!playerTeam) {
       let teamOne = 0;
       let teamTwo = 0;
       for (const playerId in state.players) {
         const player = state.players[playerId];
-        if(player.team === 0) {
+        if (player.team === 0) {
           teamOne++;
         }
 
-        if(player.team === 1) {
+        if (player.team === 1) {
           teamTwo++;
         }
       }
 
       playerTeam = 0
-      if(teamOne > teamTwo) {
+      if (teamOne > teamTwo) {
         playerTeam = 1;
       }
     }
 
-    if(playerTeam === 0) {
+    if (playerTeam === 0) {
       playerX = state.screen.width/2 - 6;
       playerY = state.screen.height/2;
     }
 
-    if(playerTeam === 1) {
+    if (playerTeam === 1) {
       playerX = state.screen.width/2 + 6;
       playerY = state.screen.height/2;
+    }
+
+    if (!playerFlag) {
+      playerFlag = null;
+    }
+
+    if (!playerStopped) {
+      playerStopped = false;
     }
 
     state.players[playerId] = {
       x: playerX,
       y: playerY,
       team: playerTeam,
-      flag: playerFlag
+      flag: playerFlag,
+      stopped: playerStopped
     };
 
     notifyAll({
@@ -73,12 +82,72 @@ const createGame = () => {
       playerX,
       playerY,
       playerTeam,
-      playerFlag
+      playerFlag,
+      playerStopped
     });
   };
 
-  const updatePlayer = ({ playerId, playerX, playerY, playerTeam, playerFlag }) => {
-    delete state.players[playerId];
+  const movePlayer = (command) => {
+    notifyAll(command);
+
+    const acceptedMoves = {
+      ArrowUp(player) {
+        if (!player.stopped && player.y - 1 >= 0) {
+          player.y = player.y - 1;
+        }
+      },
+      ArrowRight(player) {
+        if (!player.stopped && player.x + 1 < state.screen.width) {
+          player.x = player.x + 1;
+        }
+      },
+      ArrowDown(player) {
+        if (!player.stopped && player.y + 1 < state.screen.height) {
+          player.y = player.y + 1;
+        }
+      },
+      ArrowLeft(player) {
+        if (!player.stopped && player.x - 1 >= 0) {
+          player.x = player.x - 1;
+        }
+      }
+    }
+
+    const player = state.players[command.playerId];
+    const moveFunction = acceptedMoves[command.keyPressed];
+
+    if (player && moveFunction) {
+      moveFunction(player);
+      checkForFlagCollision(command.playerId);
+    }
+  };
+
+  const updatePlayer = ({ playerId, playerX, playerY, playerTeam, playerFlag, playerStopped }) => {
+    const player = state.players[playerId];
+
+    if (!playerX) {
+      playerX = player.x;
+    }
+
+    if (!playerY) {
+      playerY = player.y;
+    }
+
+    if (!playerTeam) {
+      playerTeam = player.team;
+    }
+
+    if (playerStopped === null || playerStopped === undefined) {
+      playerStopped = player.stopped;
+    }
+
+    state.players[playerId] = {
+      x: playerX,
+      y: playerY,
+      team: playerTeam,
+      flag: playerFlag,
+      stopped: playerStopped
+    }
 
     notifyAll({
       type: 'update-player',
@@ -86,10 +155,10 @@ const createGame = () => {
       playerX,
       playerY,
       playerTeam,
-      playerFlag
+      playerFlag,
+      playerStopped
     });
   };
-
 
   const removePlayer = ({ playerId }) => {
     delete state.players[playerId];
@@ -122,7 +191,9 @@ const createGame = () => {
   };
 
   const moveFlag = ({ flagId, flagX, flagY }) => {
+    const flag = state.flags[flagId];
     state.flags[flagId] = {
+      ...flag,
       x: flagX,
       y: flagY
     };
@@ -147,53 +218,80 @@ const createGame = () => {
   const checkForFlagCollision = (playerId) => {
     const player = state.players[playerId];
 
+    for (const playerIdInComing in state.players) {
+      if(playerId !== playerIdInComing) {
+        const playerInComing = state.players[playerIdInComing];
+
+        if (player.x > state.screen.width / 2) {
+          if (player.x === playerInComing.x && player.y === playerInComing.y) {
+
+            // Disblock moves of team zero enemy
+            if (player.team === playerInComing.team) {
+              updatePlayer({
+                playerId: playerIdInComing,
+                playerStopped: false
+              });
+            }
+
+            // Block moves of team zero enemy
+            if (player.team !== playerInComing.team) {
+              updatePlayer({
+                playerId: player.team === 0 ? playerId : playerIdInComing,
+                playerStopped: true
+              });
+            }
+          }
+        }
+
+        if (player.x < state.screen.width / 2) {
+          if (player.x === playerInComing.x && player.y === playerInComing.y) {
+
+            // Disblock moves of team one enemy
+            if (player.team === playerInComing.team) {
+              updatePlayer({
+                playerId: playerIdInComing,
+                playerStopped: false
+              });
+            }
+
+            // Block moves of team one enemy
+            if (player.team !== playerInComing.team) {
+              updatePlayer({
+                playerId: player.team === 1 ? playerId : playerIdInComing,
+                playerStopped: true
+              });
+            }
+          }
+        }
+      }
+    }
+
     for (const flagId in state.flags) {
       const flag = state.flags[flagId];
-      console.log(`Checking ${playerId} and ${flagId}.`);
 
-      if (player.x === flag.x && player.y === flag.y) {
-        // updatePlayer({ playerId, playerX: player.x, playerY: player.y, playerTeam: player.team, playerFlag: flagId });
+      // Player get enemy flag.
+      if (player.x === flag.x && player.y === flag.y && player.team !== flag.team) {
+        updatePlayer({ playerId, playerFlag: flagId });
       }
 
-      // if(player.flag == flag.id) {
-      //   moveFlag({ flagId, flagX: player.x, flagY: player.y });
-      // }
+      // Player move flag after move your self.
+      if (player.flag === flagId) {
+        moveFlag({ flagId, flagX: player.x, flagY: player.y });
+      }
+
+      // Player comes to an end with enemy flag.
+      if (player.flag === flagId && player.x === state.screen.width / 2 && player.y < state.screen.height) {
+        if (flag.team === 0) {
+          updatePlayer({ playerId, playerFlag: null });
+          moveFlag({ flagId, flagX: 5, flagY: state.screen.height/2 }); 
+        }
+
+        if (flag.team === 1) {
+          updatePlayer({ playerId, playerFlag: null });
+          moveFlag({ flagId, flagX: state.screen.width - 6, flagY: state.screen.height/2 });
+        }
+      }
     }            
-  };
-
-  const movePlayer = (command) => {
-    notifyAll(command);
-
-    const acceptedMoves = {
-      ArrowUp(player) {
-        if (player.y - 1 >= 0) {
-          player.y = player.y - 1;
-        }
-      },
-      ArrowRight(player) {
-        if (player.x + 1 < state.screen.width) {
-          player.x = player.x + 1;
-        }
-      },
-      ArrowDown(player) {
-        if (player.y + 1 < state.screen.height) {
-          player.y = player.y + 1;
-        }
-      },
-      ArrowLeft(player) {
-        if (player.x - 1 >= 0) {
-          player.x = player.x - 1;
-        }
-      }
-    }
-
-    const player = state.players[command.playerId];
-    const moveFunction = acceptedMoves[command.keyPressed];
-
-    if (player && moveFunction) {
-      moveFunction(player);
-      checkForFlagCollision(command.playerId);
-    }
   };
 
   return {

@@ -69,7 +69,7 @@
 
       socket.on('update-player', (command) => {
         // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
-        game.addPlayer(command);
+        game.updatePlayer(command);
       });
 
       socket.on('move-player', (command) => {
