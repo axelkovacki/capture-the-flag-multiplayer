@@ -11,7 +11,8 @@ const createGame = () => {
   const observers = [];
 
   const start = () => {
-    addFruit();
+    addFruit({ fruitId: 'flag1', fruitX: 5, fruitY: state.screen.height/2 });
+    addFruit({ fruitId: 'flag2', fruitX: state.screen.width - 6, fruitY: state.screen.height/2 });
   };
 
   const subscribe = (observerFunction) => {
@@ -95,7 +96,7 @@ const createGame = () => {
 
       if (player.x === fruit.x && player.y === fruit.y) {
         console.log(`Collision between ${playerId} and ${fruitId}.`);
-        removeFruit({ fruitId });
+        // removeFruit({ fruitId });
       }
     }            
   };

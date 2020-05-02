@@ -1,12 +1,19 @@
 const renderScreen = (screen, game, requestAnimationFrame, currentPlayerId) => {
   const context = screen.getContext('2d');
-  const { width, height } = game.state.screen;
+  const canvasWidth = game.state.screen.width;
+  const canvasHeight = game.state.screen.height;
 
-  screen.width = width;
-  screen.height = height;
+  screen.width = canvasWidth;
+  screen.height = canvasHeight;
 
   context.fillStyle = 'white';
-  context.clearRect(0, 0, width, height);
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+  for (let row = 0; row < canvasHeight; row++) {
+    context.fillStyle = 'blue';
+    context.globalAlpha = 0.1;
+    context.fillRect(canvasWidth/2, row, 1, 1);
+  }
   
   for (const playerId in game.state.players) {
     const player = game.state.players[playerId];
