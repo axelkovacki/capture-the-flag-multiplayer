@@ -29,25 +29,52 @@ const createGame = () => {
     Object.assign(state, newState);
   };
 
-  const addPlayer = ({ playerId, playerX, playerY }) => {
-    if (!playerX) {
-      playerX = Math.floor(Math.random() * state.screen.width);
+  const addPlayer = ({ playerId, playerX, playerY, playerTeam }) => {
+    if(!playerTeam) {
+      let teamOne = 0;
+      let teamTwo = 0;
+      for (const playerId in state.players) {
+        const player = state.players[playerId];
+        if(player.team === 0) {
+          teamOne++;
+        }
+
+        if(player.team === 1) {
+          teamTwo++;
+        }
+      }
+
+      playerTeam = 0
+      if(teamOne > teamTwo) {
+        playerTeam = 1;
+      }
     }
 
-    if (!playerY) {
-      playerY = Math.floor(Math.random() * state.screen.height);
+    addFruit({ fruitId: 'flag1', fruitX: 5, fruitY: state.screen.height/2 });
+    addFruit({ fruitId: 'flag2', fruitX: state.screen.width - 6, fruitY: state.screen.height/2 });
+
+    if(playerTeam === 0) {
+      playerX = state.screen.width/2 - 6;
+      playerY = state.screen.height/2;
+    }
+
+    if(playerTeam === 1) {
+      playerX = state.screen.width/2 + 6;
+      playerY = state.screen.height/2;
     }
 
     state.players[playerId] = {
       x: playerX,
-      y: playerY
+      y: playerY,
+      team: playerTeam
     };
 
     notifyAll({
       type: 'add-player',
       playerId,
       playerX,
-      playerY
+      playerY,
+      playerTeam
     });
   };
 
