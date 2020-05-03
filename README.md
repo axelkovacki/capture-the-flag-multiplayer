@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/37746303/80896466-e57eea00-8cc4-11ea-8dce-5491cf45907f.png" width="850">
+</p>
+
 # capture-the-flag-multiplayer
 Jogo multiplayer de Pega Bandeira feito em Javascript (Node/Socket.io). 
 
