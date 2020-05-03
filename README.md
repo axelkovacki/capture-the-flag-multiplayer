@@ -11,5 +11,4 @@ Esse jogo é uma implementação do projeto **[Meu Primeiro Jogo Multiplayer](ht
 # Objetivo do Jogo
 Trazer para o meio de campo a bandeira que se encontra no lado adversário. Mas tem um detalhe. Ao ser pego por um inimigo, o seu pixel será "congelado" e somente um aliado poderá te "descongelar".
 
-# Como posso jogar?
-Clica **[aqui](https://pega-bandeira.herokuapp.com/)**!
+# Clica **[aqui](https://pega-bandeira.herokuapp.com/)** para jogar!
