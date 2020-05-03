@@ -4,25 +4,41 @@
     <title>Pega Bandeira</title>
     <style>
       body {
-        margin: 20px 0 0 0;
+        margin: 30px 0 0 0;
         padding: 0;
         background-color: #EEE;
         text-align: center;
       }
 
       h1 {
-        font-size: 36px;
-      }
-
-      .score {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
+        color: black;
+        font-size: 26px;
       }
 
       h2 {
-        margin: 30px
+        color: black;
+        font-size: 18px;
+        margin: 5px;
+      }
+
+      p {
+        margin: 0px;
+      }
+
+      .main {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+
+      .score {
+        background-color: '#fff';
+        -webkit-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        -moz-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        text-align: 'center';
+        padding: 15px 30px;
+        margin-left: 15px;
       }
 
       #screen {
@@ -40,32 +56,23 @@
   </head>
   <body>
     <h1>Pega Bandeira</h1>
+    <p><b>Objetivo:</b> Pegar a bandeira no campo do adversário.</p>
+    <p><b>Detalhe:</b> Ao ser pego por um inimigo, você será congelado e somente um aliado poderá te descongelar.</p>
+    <div class="main">
+      <canvas id="screen">
+      </canvas>
 
-    <canvas id="screen">
-    </canvas>
-
-    <div class="score"></div>
+      <div class="score"></div>
+    </div>
 
     <script type="module">
       import createGame from './game.js';
       import createKeyboardListener from './keyboard-listener.js';
       import renderScreen from './render-screen.js';
+      import renderScore from './render-score.js';
 
       const game = createGame();
       const keyBoardListener = createKeyboardListener(document);
-
-      const renderScore = () => {
-        const el = document.querySelector('.score');
-        el.innerHTML = '';
-        
-        for (const teamId in game.state.scores) {
-          const score = game.state.scores[teamId];
-          const h2 = document.createElement('h2'); 
-          h2.appendChild(document.createTextNode(`Pontuação: ${score}`));
-
-          el.appendChild(h2);
-        }
-      };
 
       const socket = io();
 
@@ -87,13 +94,13 @@
           socket.emit('move-player', command);
         });
 
-        renderScore();
+        renderScore(document, game);
       });
 
       socket.on('update-score', (command) => {
         // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
         game.updateScore(command);
-        renderScore();
+        renderScore(document, game);
       });
 
       socket.on('add-player', (command) => {

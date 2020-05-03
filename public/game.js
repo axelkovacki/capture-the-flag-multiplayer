@@ -298,13 +298,13 @@ const createGame = () => {
       // Player comes to an end with enemy flag.
       if (player.x === state.screen.width / 2 && player.y < state.screen.height) {
         if (flag.team === 0) {
-          updateScore({ teamId: 'teamOne', teamScore: state.scores['teamOne'] += 1 });
+          updateScore({ teamId: 'teamTwo', teamScore: state.scores['teamTwo'] += 1 });
           updatePlayer({ playerId, playerFlag: null });
           moveFlag({ flagId, flagX: 5, flagY: state.screen.height/2 }); 
         }
 
         if (flag.team === 1) {
-          updateScore({ teamId: 'teamTwo', teamScore: state.scores['teamTwo'] += 1 });
+          updateScore({ teamId: 'teamOne', teamScore: state.scores['teamOne'] += 1 });
           updatePlayer({ playerId, playerFlag: null });
           moveFlag({ flagId, flagX: state.screen.width - 6, flagY: state.screen.height/2 });
         }
