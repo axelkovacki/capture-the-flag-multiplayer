@@ -1,15 +1,47 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Multiplayer Game</title>
+    <title>Pega Bandeira</title>
     <style>
       body {
-        margin: 40px 0 0 0;
+        margin: 30px 0 0 0;
         padding: 0;
         background-color: #EEE;
         text-align: center;
       }
-       
+
+      h1 {
+        color: black;
+        font-size: 26px;
+      }
+
+      h2 {
+        color: black;
+        font-size: 18px;
+        font-weight: inherit;
+        margin: 5px;
+      }
+
+      p {
+        margin: 0px;
+      }
+
+      .main {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+
+      .score {
+        background-color: '#fff';
+        -webkit-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        -moz-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        text-align: 'center';
+        padding: 15px 30px;
+        margin-left: 15px;
+      }
+
       #screen {
         image-rendering: pixelated;
         image-rendering: crisp-edges;
@@ -17,20 +49,28 @@
         -webkit-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
         -moz-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
         box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
-        width: 600px;
-        height: 300px;
+        width: 1000px;
+        height: 500px;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-    <canvas id="screen" width="40" height="20">
-    </canvas>
+    <h1>Pega Bandeira</h1>
+    <p><b>Objetivo:</b> Pegar a bandeira no campo do adversário.</p>
+    <p><b>Detalhe:</b> Ao ser pego por um inimigo, você será congelado e somente um aliado poderá te descongelar.</p>
+    <div class="main">
+      <canvas id="screen">
+      </canvas>
+
+      <div class="score"></div>
+    </div>
 
     <script type="module">
       import createGame from './game.js';
       import createKeyboardListener from './keyboard-listener.js';
       import renderScreen from './render-screen.js';
+      import renderScore from './render-score.js';
 
       const game = createGame();
       const keyBoardListener = createKeyboardListener(document);
@@ -39,7 +79,7 @@
 
       socket.on('connect', () => {
         const playerId = socket.id;
-        console.log(`> Player connected on Client with id: ${playerId}`);
+        // console.log(`> Player connected on Client with id: ${playerId}`);
 
         const screen = document.querySelector('#screen');
         renderScreen(screen, game, requestAnimationFrame, playerId);
@@ -54,15 +94,28 @@
         keyBoardListener.subscribe((command) => {
           socket.emit('move-player', command);
         });
+
+        renderScore(document, game);
+      });
+
+      socket.on('update-score', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
+        game.updateScore(command);
+        renderScore(document, game);
       });
 
       socket.on('add-player', (command) => {
-        console.log(`> Receiving ${command.type} -> ${command.playerId}`);
+        // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
         game.addPlayer(command);
       });
 
+      socket.on('update-player', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
+        game.updatePlayer(command);
+      });
+
       socket.on('move-player', (command) => {
-        console.log(`> Receiving ${command.type} -> ${command.playerId}`);
+        // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
 
         const playerId = socket.id;
         if(playerId !== command.playerId) {
@@ -71,18 +124,23 @@
       });
 
       socket.on('remove-player', (command) => {
-        console.log(`> Receiving ${command.type} -> ${command.playerId}`);
+        // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
         game.removePlayer(command);
       });
 
-      socket.on('add-fruit', (command) => {
-        console.log(`> Receiving ${command.type} -> ${command.fruitId}`);
-        game.addFruit(command);
+      socket.on('add-flag', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.flagId}`);
+        game.addFlag(command);
       });
 
-      socket.on('remove-fruit', (command) => {
-        console.log(`> Receiving ${command.type} -> ${command.fruitId}`);
-        game.removeFruit(command);
+      socket.on('move-flag', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.flagId}`);
+        game.moveFlag(command);
+      });
+
+      socket.on('remove-flag', (command) => {
+        // console.log(`> Receiving ${command.type} -> ${command.flagId}`);
+        game.removeFlag(command);
       });
     </script>
   </body>

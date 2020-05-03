@@ -13,12 +13,16 @@ const createKeyboardListener = (document) => {
   };
 
   const notifyAll = (command) => {
-    for(const observerFunction of state.observers) {
+    for (const observerFunction of state.observers) {
       observerFunction(command);
     }
   };
 
   const handleKeyDown = (event) => {
+    if (event.repeat) {
+      return false;
+    }
+
     const keyPressed = event.key; 
 
     const command = {

@@ -13,7 +13,7 @@ const game = createGame();
 game.start();
 
 game.subscribe((command) => {
-  console.log(`> Emitting: ${command.type}`);
+  // console.log(`> Emitting: ${command.type}`);
   sockets.emit(command.type, command);
 });
 
@@ -38,6 +38,6 @@ sockets.on('connection', (socket) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('> Server listening on port: 3000');
+server.listen(process.env.PORT || 8080, () => {
+  console.log(`> Server listening on port: ${process.env.PORT || 8080}`);
 });
