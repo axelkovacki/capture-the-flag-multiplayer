@@ -7,7 +7,7 @@ const renderScore = (document, game) => {
 
   h2 = document.createElement('h2'); 
   h2.appendChild(document.createTextNode(`Pontuação`));
-  h2.style = 'margin-bottom: 10px;'
+  h2.style = 'font-weight: bold; margin-bottom: 10px;'
   el.appendChild(h2);
 
   score = game.state.scores['teamOne'];
