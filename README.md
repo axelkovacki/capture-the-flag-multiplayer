@@ -1,4 +1,4 @@
-# capture-the-flat-multiplayer
+# capture-the-flag-multiplayer
 Jogo multiplayer de Pega Bandeira feito em Javascript (Node/Socket.io). 
 
 # Inspiração
