@@ -29,7 +29,7 @@ export default [
     },
     {
         name: 'Altas Habilidades',
-        image: './images/alta-habilidades.png'
+        image: './images/altas-habilidades.png'
     },
     {
         name: 'Alugar',

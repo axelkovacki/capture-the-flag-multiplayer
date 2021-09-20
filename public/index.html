@@ -42,6 +42,21 @@
         margin-left: 15px;
       }
 
+      .sub {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+
+      .libras {
+        background-color: '#fff';
+        -webkit-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        -moz-box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        box-shadow: 0px 4px 17px 0px rgba(0,0,0,0.19);
+        text-align: 'center';
+        padding: 15px 30px;
+      }
+
       #screen {
         image-rendering: pixelated;
         image-rendering: crisp-edges;
@@ -57,14 +72,14 @@
   </head>
   <body>
     <h1>Pega Bandeira - Libras</h1>
-    <p><b>Objetivo:</b> Trazer para o meio de campo a bandeira que se encontra no lado adversário.</p>
-    <p><b>Detalhe:</b> Ao ser pego por um inimigo, o seu pixel será "congelado" e somente um aliado poderá te "descongelar".</p>
+    <!-- <p><b>Objetivo:</b> Trazer para o meio de campo a bandeira que se encontra no lado adversário.</p> -->
+    <!-- <p><b>Detalhe:</b> Ao ser pego por um inimigo, o seu pixel será "congelado" e somente um aliado poderá te "descongelar".</p> -->
     <div class="main">
-      <canvas id="screen">
-      </canvas>
-
+      <canvas id="screen"></canvas>
       <div class="score"></div>
-      <div id="libras"></div>
+    </div>
+    <div class="sub">
+      <div class="libras"></div>
     </div>
 
     <script type="module">
@@ -72,6 +87,7 @@
       import createKeyboardListener from './keyboard-listener.js';
       import renderScreen from './render-screen.js';
       import renderScore from './render-score.js';
+      import renderLibras from './render-libras.js';
 
       const game = createGame();
       const keyBoardListener = createKeyboardListener(document);
@@ -97,6 +113,7 @@
         });
 
         renderScore(document, game);
+        renderLibras(document, game, playerId);
       });
 
       socket.on('update-score', (command) => {
