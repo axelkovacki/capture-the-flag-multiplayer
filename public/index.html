@@ -46,6 +46,7 @@
         display: flex;
         justify-content: center;
         margin-top: 30px;
+        display: none;
       }
 
       .libras {
@@ -113,7 +114,6 @@
         });
 
         renderScore(document, game);
-        renderLibras(document, game, playerId);
       });
 
       socket.on('update-score', (command) => {
@@ -130,6 +130,7 @@
       socket.on('update-player', (command) => {
         // console.log(`> Receiving ${command.type} -> ${command.playerId}`);
         game.updatePlayer(command);
+        renderLibras(document, game, command);
       });
 
       socket.on('move-player', (command) => {

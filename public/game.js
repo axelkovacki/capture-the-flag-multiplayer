@@ -4,6 +4,7 @@ const createGame = () => {
       teamOne: 0,
       teamTwo: 0
     },
+    playerId: null,
     players: {},
     flags: {},
     screen: {
@@ -82,6 +83,7 @@ const createGame = () => {
       playerStopped = false;
     }
 
+    state.playerId = playerId;
     state.players[playerId] = {
       x: playerX,
       y: playerY,
