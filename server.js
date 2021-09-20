@@ -38,6 +38,6 @@ sockets.on('connection', (socket) => {
   });
 });
 
-server.listen(process.env.PORT || 8080, () => {
-  console.log(`> Server listening on port: ${process.env.PORT || 8080}`);
+server.listen(process.env.PORT || 8081, () => {
+  console.log(`> Server listening on port: ${process.env.PORT || 8081}`);
 });
