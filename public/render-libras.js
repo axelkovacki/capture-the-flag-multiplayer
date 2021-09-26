@@ -1,24 +1,30 @@
 import images from './assets/images.js';
 
+let state = {
+  showing: false
+}
+
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const createElement = (document) => {
+const createElement = () => {
   document.querySelector('.sub').style = 'display: block;';
   const el = document.querySelector('.libras');
   el.innerHTML = '';
+  state.showing = true;
 
   return el;
 };
 
-const eraseElement = (document) => {
+const eraseElement = () => {
   document.querySelector('.sub').style = 'display: none;';
+  state.showing = false;
 };
 
-const createH2Element = (document, el, title = '') => {
+const createH2Element = (el, title = '') => {
   let h2;
   h2 = document.createElement('h2'); 
   h2.appendChild(document.createTextNode(title));
@@ -26,7 +32,7 @@ const createH2Element = (document, el, title = '') => {
   el.appendChild(h2);
 };
 
-const createImgElement = (document, el, path, index, randomIndex, game, playerId, callback) => {
+const createImgElement = (el, path, index, randomIndex, game, playerId, callback) => {
   let img;
   img = document.createElement('img'); 
   img.src = `assets/${path}`;
@@ -54,10 +60,10 @@ const onClickImgElement = (game, playerId, randomIndex, { srcElement: { classNam
   eraseElement();
 };
 
-const renderLibras = (document, game, { playerId, playerStopped }) => {
-  console.log(game);
-  console.log(playerId);
-  if (!playerStopped) {
+const renderLibras = (game, playerId) => {
+  const { stopped } = game.state.players[playerId];
+
+  if (!stopped || state.showing) {
     return false;
   }
   
@@ -65,19 +71,16 @@ const renderLibras = (document, game, { playerId, playerStopped }) => {
     .sort(() => .5 - Math.random())
     .slice(0, 4);
 
-  let randomIndex = getRandomInt(0, 4);
+  let randomIndex = getRandomInt(0, 3);
 
-  console.log(randomizeImages[randomIndex]);
-  const el = createElement(document);
+  const el = createElement();
   createH2Element(
-    document,
     el,
     randomizeImages[randomIndex].name
   );
  
   for (let index = 0; index < 4; index++) {
     createImgElement(
-      document,
       el,
       images[index].image,
       index,

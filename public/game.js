@@ -25,6 +25,8 @@ const createGame = () => {
   };
 
   const notifyAll = (command) => {
+    console.log('notify')
+    console.log(command)
     for(const observerFunction of observers) {
       observerFunction(command);
     }
